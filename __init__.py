@@ -1,0 +1,1 @@
+"""Articles tool addon package."""

@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}{% if is_new %}New article{% else %}Edit article{% endif %}{% endblock %}
+
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+  <h2 style="margin:0;">{% if is_new %}New article{% else %}Edit article{% endif %}</h2>
+  <a href="/admin/tools/articles" class="btn btn--secondary">← Back to Articles</a>
+</div>
+
+{% set fv = form_values %}
+{% set src = edit_post or {} %}
+<form method="POST" action="{% if is_new %}/admin/tools/articles/add{% else %}/admin/tools/articles/{{ src.id }}/save{% endif %}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+  <div class="card" style="margin-bottom:20px;">
+    <div class="form-group">
+      <label class="form-label">Title</label>
+      <input type="text" name="title" id="article-title" class="form-input" required maxlength="200"
+             value="{{ fv.get('title', src.get('title', '')) }}">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Slug</label>
+      <input type="text" name="slug" id="article-slug" class="form-input" maxlength="120"
+             pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
+             value="{{ fv.get('slug', src.get('slug', '')) }}"
+             placeholder="auto-from-title-if-empty">
+    </div>
+    <label style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+      {% set pub = fv.get('published', src.get('published', false)) %}
+      <input type="checkbox" name="published" value="on" {% if pub %}checked{% endif %}>
+      Published
+    </label>
+    <div class="form-group">
+      <label class="form-label">Meta title (optional)</label>
+      <input type="text" name="meta_title" class="form-input" maxlength="200"
+             value="{{ fv.get('meta_title', src.get('meta_title') or '') }}">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Meta description (optional)</label>
+      <input type="text" name="meta_description" class="form-input" maxlength="500"
+             value="{{ fv.get('meta_description', src.get('meta_description') or '') }}">
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:20px;">
+    <h3 style="margin-top:0;">Body (Markdown)</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div>
+        <label class="form-label">Editor</label>
+        <textarea name="body_markdown" id="article-md" class="form-input" rows="22"
+                  style="font-family:ui-monospace,monospace;font-size:13px;resize:vertical;">{{ fv.get('body_markdown', src.get('body_markdown', '')) }}</textarea>
+      </div>
+      <div>
+        <label class="form-label">Preview</label>
+        <div id="article-preview" class="form-input"
+             style="min-height:420px;overflow:auto;background:var(--clr-bg);padding:12px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:8px;">
+    <button type="submit" class="btn btn--primary">{% if is_new %}Create{% else %}Save{% endif %}</button>
+    <a href="/admin/tools/articles" class="btn btn--secondary">Cancel</a>
+  </div>
+</form>
+
+<script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.4/dist/purify.min.js"></script>
+<script>
+(function () {
+  var ta = document.getElementById('article-md');
+  var preview = document.getElementById('article-preview');
+  if (!ta || !preview || typeof marked === 'undefined') return;
+  function render() {
+    var html = marked.parse(ta.value || '');
+    preview.innerHTML = (typeof DOMPurify !== 'undefined') ? DOMPurify.sanitize(html) : html;
+  }
+  ta.addEventListener('input', render);
+  render();
+})();
+</script>
+{% endblock %}
