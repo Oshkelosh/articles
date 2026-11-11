@@ -7,7 +7,6 @@ from typing import Any, Dict, List
 
 from fastapi import APIRouter
 
-from app.addons.base import AdminNavItem
 from app.addons.config_serialization import dump_addon_config
 from app.addons.log import info, warning
 from app.addons.tools.articles.config import ArticlesConfig, ArticlesManifest
@@ -376,11 +375,6 @@ class ArticlesToolAddon(ToolAddon):
         from app.addons.tools.articles.routes import admin_router
 
         return [admin_router]
-
-    def get_admin_nav_items(self) -> List[AdminNavItem]:
-        return [
-            AdminNavItem(label="Articles", url="/admin/tools/articles", section="addon")
-        ]
 
     def get_admin_templates(self) -> str:
         return str(Path(__file__).resolve().parent / "templates")

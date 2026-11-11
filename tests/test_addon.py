@@ -28,6 +28,10 @@ def local_storage(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     reset_storage()
 
 
+def test_no_top_level_admin_nav():
+    assert ArticlesToolAddon().get_admin_nav_items() == []
+
+
 def test_plain_excerpt_strips_markup():
     text = plain_excerpt("Hello **world** with a [link](https://x.test)!", max_len=80)
     assert "Hello" in text

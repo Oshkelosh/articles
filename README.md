@@ -20,7 +20,7 @@ Content uses the host media backend (local `data/uploads/` or R2), same as produ
 
 ## Admin
 
-**Admin → Articles** (or `/admin/tools/articles`):
+**Admin → Tools → Articles** (or `/admin/tools/articles`):
 
 - Hub intro title / Markdown / optional meta
 - Create, edit, delete posts (Markdown editor with live preview)
